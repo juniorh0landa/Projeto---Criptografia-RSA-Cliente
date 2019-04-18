@@ -1,0 +1,81 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\title{Criptografia RSA + Cliente}
+\author{Clerisvaldo Holanda dos Santos Junior}
+
+\begin{document}
+
+\maketitle
+
+\section{Classe RSA()}
+
+O método utilizado para construir o módulo de criptografia consistiu em criar as funções mínimas encontradas nas especificações do projeto em uma classe denominada \textbf{RSA}. Sendo elas as funções \textbf{\textit{setup()}}\textit{, }utilizada para criação das chaves pública e privada, \textbf{\textit{encrypt()}}\textit{, }para criptografar uma mensagem,\textit{ }e\textit{ \textbf{decrypt()}}, para descriptografar uma mensagem.
+
+\subsection{Setup() - Criação das chaves pública e privada}
+Foi gerado uma lista de números primos pequenos e foi selecionado dois números diferentes desta mesma lista, atribuindo seus respectivos valores à P e Q. Foi calculado o valor da chave pública (N), sendo este igual ao produto entre P e Q. Além disso, para executar a regra de codificação, deve ser utilizado um expoente para elevar o valor da letra, e será atribuído o valor 3 a ela. Para que isso funcione, foi utilizada a relação a seguir:\par
+\par
+ \( P=5 mod \left( 6 \right)  \longrightarrow P=4+1 mod \left( 6 \right)  \longrightarrow P-1=4 mod \left( 6 \right)  \) , analogamente para  \(  \left( Q-1 \right)  \)
+
+ \[  \left( P-1 \right)  \cdot  \left( Q-1 \right) =16=4 mod \left( 6 \right) =6K+4=6K+3+1=3 \cdot  \left( 2K+1 \right) +1 \]
+
+ \[ 3 \cdot  \left( 2K+1 \right) =-1 mod \left( 6K+4 \right)  \longrightarrow 3 \cdot  \left( -2K-1 \right) =1 mod \left( 6K+4 \right)  \]
+
+ \[ 3 \cdot  \left( 4K+3 \right) =1 mod \left( 6K+4 \right)  \]
+
+ \[ e \cdot d=1 mod \left(  \left( P-1 \right)  \cdot  \left( Q-1 \right)  \right) =3 \cdot  \left( 4K+3 \right) =1 mod \left( 6K+4 \right)  \]
+ 
+ Para encontrar o valor de  \( K \), calculou também o valor de  \( Phi \left( N \right)  \), sendo este igual ao produto entre  \(  \left( P-1 \right)  \)  e  \(  \left( Q-1 \right)  \), e utilizou a fórmula a seguir:
+ 
+ \[ K=\frac{ \left( Phi-4 \right) }{6} \]
+ 
+E o valor da chave privada (D) foi dada por  \( D=4K+3 \), se o valor de D não fosse um inteiro, este processo repetiria. Se as chaves fossem pré-definidas pelo usuário, não seria seguido todo esse processo anterior, simplesmente seria repetido o mesmo valor. Ao finalizar este processo, as chaves pública e privada são armazenadas ao objeto.\par
+
+\subsection{Encrypt() - Encriptação do texto}
+Utilizou-se a chave pública do objeto. Converteu o texto para letras minúsculas (como especificado no projeto). E ocorreu uma validação do texto, no qual só permite letras do alfabeto inglês e espaços. Caso validado, as letras convertidas em números pela função ord(), são elevadas a 3, e o resto da divisão por N é armazenado em uma lista encriptada por números. Depois são juntas em uma string que irá ser retornada ao usuário. Caso não seja validado, irá retornar uma string com Texto inválido.\par
+
+
+\subsection{Decrypt() - Desencriptação do texto}
+
+Utilizou-se a chave pública (N) e a chave privada (D) do objeto. Os números são elevados a D, e o resto da divisão por N convertidos pela função chr() é armazenado em uma lista com as letras desencriptadas. Depois são juntas em uma string que irá ser retornada ao usuário.\par
+
+\section{Classe Cliente()}
+
+Para esta classe, ao iniciá-la, foi necessária a leitura de um arquivo com usuários e senhas encriptados, após a leitura, ocorria a desencriptação, e esses usuários ficavam armazenados em uma matriz com todos os usuários, onde, nessa matriz, poderia ser adicionado novos usuários, deletar os existentes e verificar se tal usuário existia.\par
+
+\subsection{Verify() - Verifica a existência de usuários}
+
+Verificava a existência de um usuário a partir da função index, o qual retornava o índice no vetor com usuários presente na matriz anteriormente citada. Caso não existisse, era retornado o valor -1.\par
+
+\subsection{Add() - Adiciona usuários}
+
+Utilizava a função verify() para verificar se o usuário escrito já existia no banco de dados, caso contrário, era adicionado normalmente o usuário em um vetor e a senha em outro vetor, ambos pertencentes a matriz criada na classe Cliente() e era retornado uma mensagem dizendo que o usuário foi adicionado.\par
+
+\subsection{Delete() - Deleta usuários}
+
+Utilizava a função verify() para saber se existia algum usuário como o digitado, se não existisse, era retornado ao usuário do programa uma mensagem comprovando a inexistência, caso contrário, era retornado uma pergunta para confirmar a exclusão do mesmo.\par
+
+\section{Interface de usuário}
+
+Ao instanciar um objeto com a classe Cliente(), era imprimido o número de usuários presentes em um arquivo externo, além de uma estrutura de repetição, mostrando as possibilidades do programa como opções, as quais eram adicionar, deletar, verificar usuários e finalizar o programa. Até ser selecionada a opção de finalizar o programa, essas opções continuavam a aparecer.\par
+
+Para adicionar um usuário, foi necessário duas entradas, uma para usuário e outra para senha, ao final, era chamada a função add(), com as variáveis para a adição dos mesmos se inexistentes na matriz.\par
+
+Para deletar um usuário, só foi necessária a utilização de uma entrada que pedia o nome do usuário, e mandava para a função delete() a qual retornava as mensagens ideal para a situação.
+Para verificar a existência do usuário, foi necessária a utilização de uma entrada com o nome de usuário a ser verificado, se o número retornado fosse negativo, este usuário não existia no sistema, caso contrário, existia.\par
+
+Ao finalizar o programa, uma mensagem de que o mesmo foi finalizado era imprimida. O arquivo com os usuários era zerado, depois chaves pública e privada eram geradas aleatoriamente, e no arquivo, era escrito estas na forma (chave privada) (chave pública), estas chaves substituíam as chaves do começo da interface. Após isso, era escrito linha por linha no arquivo com o usuário criptografado, e depois a senha criptografada deste usuário, até completar o arquivo. Ficando no formato:\par
+(Chave privada) (Chave pública)\par
+
+Usuáriocripto1\par
+
+Senhacripto1\par
+
+…\par
+
+UsuariocriptoN\par
+
+SenhacriptoN\par
+
+
+\end{document}
